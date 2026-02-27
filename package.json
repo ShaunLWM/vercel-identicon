@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter preview dev",
+    "build": "pnpm --filter vercel-identicon build",
+    "build:all": "pnpm -r build",
+    "lint": "biome check packages/",
+    "lint:fix": "biome check --write packages/"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.4",
+    "typescript": "^5.7.3"
+  }
+}

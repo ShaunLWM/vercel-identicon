@@ -1,0 +1,54 @@
+{
+	"name": "vercel-identicon",
+	"version": "0.0.1",
+	"description": "Deterministic, hash-based identicon generator with 100+ visual variants and 17 color schemes",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ShaunLWM/vercel-identicon",
+		"directory": "packages/identicon"
+	},
+	"homepage": "https://identicon-prototype.labs.vercel.dev/",
+	"keywords": [
+		"identicon",
+		"avatar",
+		"generative",
+		"hash",
+		"dither",
+		"webgl",
+		"canvas",
+		"react"
+	],
+	"type": "module",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch"
+	},
+	"peerDependencies": {
+		"react": ">=18.0.0"
+	},
+	"devDependencies": {
+		"react": "^19.0.0",
+		"@types/react": "^19.0.0",
+		"tsup": "^8.3.0"
+	}
+}
