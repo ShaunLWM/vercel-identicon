@@ -1,6 +1,6 @@
 {
 	"name": "vercel-identicon",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Deterministic, hash-based identicon generator with 100+ visual variants and 17 color schemes",
 	"license": "MIT",
 	"repository": {
