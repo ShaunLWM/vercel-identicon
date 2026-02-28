@@ -8,6 +8,10 @@ Extracted from [identicon-prototype.labs.vercel.dev](https://identicon-prototype
 
 ```bash
 npm install vercel-identicon
+# or
+pnpm add vercel-identicon
+# or
+yarn add vercel-identicon
 ```
 
 Requires React 18+.
