@@ -182,8 +182,9 @@ export const retroGenerators: CanvasGenerator[] = [
 					const shift = Math.floor((rng() - 0.5) * size * 0.25);
 					const y = si * sliceH;
 					const h = sliceH * (Math.min(numSlices - 1, si + 1) - si);
-					if (Math.abs(shift) > 2) {
-						const slice = ctx.getImageData(0, y, size, Math.min(h, size - y));
+					const clampedH = Math.min(h, size - y);
+					if (Math.abs(shift) > 2 && clampedH > 0) {
+						const slice = ctx.getImageData(0, y, size, clampedH);
 						ctx.putImageData(slice, shift, y);
 						ctx.putImageData(slice, shift - size, y);
 					}

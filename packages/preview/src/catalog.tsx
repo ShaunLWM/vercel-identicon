@@ -1,11 +1,17 @@
+import { useCallback, useRef } from "react";
 import type { ColorScheme } from "vercel-identicon";
-import { Identicon } from "vercel-identicon";
+import { Identicon, isAnimatedVariant, renderToCanvas, startAnimation } from "vercel-identicon";
 
-type Category = { name: string; ids: string[] };
+type Category = {
+	name: string;
+	color: string;
+	ids: string[];
+};
 
 const CATEGORIES: Category[] = [
 	{
 		name: "Bayer Dithering",
+		color: "#c084fc",
 		ids: [
 			"bayer-2x2",
 			"bayer-4x4",
@@ -18,10 +24,12 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Error Diffusion",
+		color: "#c084fc",
 		ids: ["floyd-steinberg", "atkinson", "jarvis-judice-ninke", "sierra", "stucki"],
 	},
 	{
 		name: "Pattern Dithering",
+		color: "#c084fc",
 		ids: [
 			"white-noise",
 			"blue-noise",
@@ -37,14 +45,17 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Organic Dithering",
+		color: "#c084fc",
 		ids: ["atkinson-blob", "halftone-field", "cross-hatch", "spiral-dither", "blue-noise-dither"],
 	},
 	{
 		name: "Terminal",
+		color: "#4ade80",
 		ids: ["phosphor-grid", "ansi-quilt", "teletext-mosaic", "matrix-rain", "raster-bars"],
 	},
 	{
 		name: "Retro",
+		color: "#4ade80",
 		ids: [
 			"crt-rgb",
 			"vhs-tracking",
@@ -59,6 +70,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Visually Striking",
+		color: "#fb7185",
 		ids: [
 			"chromatic-aberration",
 			"voronoi-glass",
@@ -72,6 +84,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Algorithmic",
+		color: "#4ade80",
 		ids: [
 			"game-of-life",
 			"maze",
@@ -87,6 +100,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Generative",
+		color: "#2dd4bf",
 		ids: [
 			"reaction-diffusion",
 			"ascii-matrix",
@@ -98,10 +112,12 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Nature & Science",
+		color: "#2dd4bf",
 		ids: ["agate-slice", "phyllotaxis", "cymatics", "fingerprint", "tree-rings", "coral-growth"],
 	},
 	{
 		name: "Textile & Craft",
+		color: "#2dd4bf",
 		ids: [
 			"quilt-block",
 			"sashiko-stitch",
@@ -113,10 +129,12 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "Math & Generative Art",
+		color: "#2dd4bf",
 		ids: ["clifford-attractor", "hilbert-curve", "spiral-galaxy", "sound-ring", "erosion-canyon"],
 	},
 	{
 		name: "WebGL \u2014 Scenes",
+		color: "#fb7185",
 		ids: [
 			"aurora-bands",
 			"layered-ridges",
@@ -132,6 +150,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "WebGL \u2014 Art Movements",
+		color: "#fb7185",
 		ids: [
 			"rothko-fields",
 			"mondrian-grid",
@@ -149,6 +168,7 @@ const CATEGORIES: Category[] = [
 	},
 	{
 		name: "WebGL \u2014 Effects",
+		color: "#fb7185",
 		ids: [
 			"neon-glow",
 			"caustics",
@@ -160,22 +180,16 @@ const CATEGORIES: Category[] = [
 			"stained-glass",
 			"topographic-map",
 			"circuit-board",
+			"fractal-coral",
 			"galaxy-spiral",
+			"bayer-4x4-animated",
+			"ink-in-water",
+			"supercell",
+			"warp-fabric",
+			"gradient-orb",
 		],
 	},
 ];
-
-const CIRCLE_STYLE: React.CSSProperties = { borderRadius: "50%" };
-
-const CARD_STYLE: React.CSSProperties = {
-	marginBottom: 24,
-	padding: "12px 12px 16px",
-	background: "#111113",
-	borderRadius: 10,
-	border: "1px solid #1c1c1f",
-	contentVisibility: "auto",
-	containIntrinsicSize: "0 120px",
-};
 
 function formatName(id: string): string {
 	return id
@@ -184,76 +198,193 @@ function formatName(id: string): string {
 		.join(" ");
 }
 
-export function Catalog({ colorScheme, users }: { colorScheme: ColorScheme; users: string[] }) {
+function VariantRow({
+	id,
+	users,
+	colorScheme,
+	size,
+	onSelectVariant,
+	isSelected,
+}: {
+	id: string;
+	users: string[];
+	colorScheme: ColorScheme;
+	size: number;
+	onSelectVariant: (v: string) => void;
+	isSelected: boolean;
+}) {
+	const animated = isAnimatedVariant(id);
+	const rowRef = useRef<HTMLDivElement>(null);
+	const stopFnsRef = useRef<(() => void)[]>([]);
+
+	const onMouseEnter = useCallback(() => {
+		if (!animated || !rowRef.current) return;
+		const canvases = rowRef.current.querySelectorAll<HTMLCanvasElement>("canvas");
+		const stops: (() => void)[] = [];
+		for (let i = 0; i < canvases.length; i++) {
+			const canvas = canvases[i];
+			const user = users[i];
+			if (!user) continue;
+			stops.push(startAnimation(canvas, { value: user, size, variant: id, colorScheme }));
+		}
+		stopFnsRef.current = stops;
+	}, [animated, users, size, id, colorScheme]);
+
+	const onMouseLeave = useCallback(() => {
+		for (const stop of stopFnsRef.current) stop();
+		stopFnsRef.current = [];
+		if (!rowRef.current) return;
+		const canvases = rowRef.current.querySelectorAll<HTMLCanvasElement>("canvas");
+		for (let i = 0; i < canvases.length; i++) {
+			const canvas = canvases[i];
+			const user = users[i];
+			if (!user) continue;
+			renderToCanvas(canvas, { value: user, size, variant: id, colorScheme });
+		}
+	}, [users, size, id, colorScheme]);
+
+	return (
+		<div
+			style={{
+				marginBottom: 20,
+				padding: "8px 0",
+			}}
+		>
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "space-between",
+					marginBottom: 8,
+				}}
+			>
+				<div>
+					<h3
+						style={{
+							fontSize: 13,
+							fontWeight: 600,
+							color: "#e4e4e7",
+						}}
+					>
+						{formatName(id)}
+						{animated && (
+							<span style={{ fontSize: 10, color: "#52525b", fontWeight: 400, marginLeft: 8 }}>
+								animated
+							</span>
+						)}
+					</h3>
+				</div>
+				<button
+					type="button"
+					onClick={() => onSelectVariant(id)}
+					style={{
+						background: isSelected ? "#333" : "#111",
+						border: "1px solid #333",
+						borderRadius: 6,
+						padding: "3px 10px",
+						fontSize: 11,
+						color: isSelected ? "#fafafa" : "#71717a",
+						fontFamily: "inherit",
+						cursor: "pointer",
+						fontWeight: isSelected ? 600 : 400,
+					}}
+				>
+					{isSelected ? "Active" : "Preview"}
+				</button>
+			</div>
+			<div
+				ref={rowRef}
+				onMouseEnter={animated ? onMouseEnter : undefined}
+				onMouseLeave={animated ? onMouseLeave : undefined}
+				style={{
+					display: "grid",
+					gridTemplateColumns: `repeat(6, ${size}px)`,
+					gap: 10,
+				}}
+			>
+				{users.slice(0, 6).map((user) => (
+					<div
+						key={user}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+							gap: 4,
+						}}
+					>
+						<Identicon
+							value={user}
+							size={size}
+							variant={id}
+							colorScheme={colorScheme}
+							style={{ borderRadius: "50%" }}
+						/>
+						<span
+							style={{
+								fontSize: 9,
+								color: "#52525b",
+								maxWidth: size + 8,
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+								whiteSpace: "nowrap",
+								textAlign: "center",
+							}}
+						>
+							{user}
+						</span>
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+export function Catalog({
+	colorScheme,
+	users,
+	size,
+	onSelectVariant,
+	selectedVariant,
+}: {
+	colorScheme: ColorScheme;
+	users: string[];
+	size: number;
+	onSelectVariant: (v: string) => void;
+	selectedVariant: string;
+}) {
 	return (
 		<div style={{ padding: "32px 28px 80px" }}>
 			{CATEGORIES.map((cat) => (
 				<section key={cat.name} style={{ marginBottom: 40 }}>
-					<h2
+					<div
 						style={{
-							fontSize: 11,
-							fontWeight: 500,
-							letterSpacing: "0.08em",
-							color: "#71717a",
+							borderTop: `1px solid ${cat.color}33`,
+							paddingTop: 12,
 							marginBottom: 16,
-							textTransform: "uppercase",
 						}}
 					>
-						{cat.name}
-					</h2>
+						<h2
+							style={{
+								fontSize: 11,
+								fontWeight: 600,
+								letterSpacing: "0.08em",
+								color: cat.color,
+								textTransform: "uppercase",
+							}}
+						>
+							{cat.name}
+						</h2>
+					</div>
 					{cat.ids.map((id) => (
-						<div key={id} style={CARD_STYLE}>
-							<h3
-								style={{
-									fontSize: 13,
-									fontWeight: 600,
-									color: "#e4e4e7",
-									marginBottom: 10,
-								}}
-							>
-								{formatName(id)}
-							</h3>
-							<div
-								style={{
-									display: "flex",
-									flexWrap: "wrap",
-									gap: 10,
-								}}
-							>
-								{users.map((user) => (
-									<div
-										key={user}
-										style={{
-											display: "flex",
-											flexDirection: "column",
-											alignItems: "center",
-											gap: 4,
-										}}
-									>
-										<Identicon
-											value={user}
-											size={36}
-											variant={id}
-											colorScheme={colorScheme}
-											style={CIRCLE_STYLE}
-										/>
-										<span
-											style={{
-												fontSize: 9,
-												color: "#52525b",
-												maxWidth: 40,
-												overflow: "hidden",
-												textOverflow: "ellipsis",
-												whiteSpace: "nowrap",
-												textAlign: "center",
-											}}
-										>
-											{user}
-										</span>
-									</div>
-								))}
-							</div>
-						</div>
+						<VariantRow
+							key={id}
+							id={id}
+							users={users}
+							colorScheme={colorScheme}
+							size={size}
+							onSelectVariant={onSelectVariant}
+							isSelected={selectedVariant === id}
+						/>
 					))}
 				</section>
 			))}

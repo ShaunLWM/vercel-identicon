@@ -1,6 +1,6 @@
 # vercel-identicon
 
-Deterministic identicon generator for React. Hash a string, get a unique visual back. Same input, same output, every time. Over 100 variants across Canvas 2D and WebGL renderers, 17 color schemes.
+Deterministic identicon generator for React. Hash a string, get a unique visual back. Same input, same output, every time. 120+ variants across Canvas 2D and WebGL renderers, 17 color schemes. Animated variants respond to hover.
 
 Extracted from [identicon-prototype.labs.vercel.dev](https://identicon-prototype.labs.vercel.dev/).
 
@@ -35,7 +35,7 @@ Renders a `<canvas>`. Accepts `className` and `style`.
 
 ## Variants
 
-100+ generators, organized by technique:
+120+ generators, organized by technique:
 
 - **Bayer dithering** — `bayer-2x2`, `bayer-4x4`, `bayer-8x8`, and scaled variants
 - **Error diffusion** — `floyd-steinberg`, `atkinson`, `jarvis-judice-ninke`, `sierra`, `stucki`
@@ -50,7 +50,7 @@ Renders a `<canvas>`. Accepts `className` and `style`.
 - **Math** — `clifford-attractor`, `hilbert-curve`, `spiral-galaxy`, `sound-ring`, `erosion-canyon`
 - **WebGL scenes** — `aurora-bands`, `layered-ridges`, `ink-drop`, `bokeh`, `silk-fold`, `prism-split`, `angular-gradient`, `faceted-gem`, `tide-pool`, `eclipse`
 - **WebGL art** — `rothko-fields`, `mondrian-grid`, `albers-squares`, `lewitt-lines`, `riley-waves`, `kandinsky-circles`, `klee-tiles`, `escher-tessellation`, `pollock-drip`, `malevich-suprematism`, `delaunay-discs`, `agnes-martin-grid`
-- **WebGL effects** — `neon-glow`, `caustics`, `metaballs`, `julia-set`, `voronoi-crystal`, `electric-plasma`, `liquid-marble`, `stained-glass`, `topographic-map`, `circuit-board`, `galaxy-spiral`
+- **WebGL effects** — `neon-glow`, `caustics`, `metaballs`, `julia-set`, `voronoi-crystal`, `electric-plasma`, `liquid-marble`, `stained-glass`, `topographic-map`, `circuit-board`, `fractal-coral`, `galaxy-spiral`, `bayer-4x4-animated`, `ink-in-water`, `supercell`, `warp-fabric`, `gradient-orb`
 
 Get the full list at runtime:
 
@@ -67,7 +67,7 @@ import { variantIds } from "vercel-identicon";
 
 ## How it works
 
-Each string runs through a Murmurhash-style dual 32-bit hash. That hash seeds a mulberry32 PRNG and picks two colors from the chosen scheme. Canvas 2D generators write pixels directly via `ImageData`. WebGL generators compile GLSL fragment shaders, render to an offscreen canvas, then blit to the target. A handful of WebGL variants animate with `requestAnimationFrame`.
+Each string runs through a Murmurhash-style dual 32-bit hash. That hash seeds a mulberry32 PRNG and picks two colors from the chosen scheme. Canvas 2D generators write pixels directly via `ImageData`. WebGL generators compile GLSL fragment shaders, render to an offscreen canvas, then blit to the target. Eight WebGL variants (`aurora-bands`, `ink-drop`, `neon-glow`, `bayer-4x4-animated`, `ink-in-water`, `supercell`, `warp-fabric`, `gradient-orb`) animate on hover via `requestAnimationFrame` and freeze to a static frame on mouse leave.
 
 Everything is deterministic. No network requests, no external state.
 

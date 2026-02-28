@@ -1,22 +1,7 @@
-import type { ColorScheme } from "vercel-identicon";
+import type { ColorScheme, Variant } from "vercel-identicon";
 import { Identicon } from "vercel-identicon";
 
 type Status = "ready" | "building" | "error";
-
-const VARIANTS: Record<string, string> = {
-	evilrabbit: "spiral-dither",
-	rauno: "bayer-4x4",
-	guillermo: "voronoi-glass",
-	henry: "halftone-dots",
-	wits: "checkerboard",
-	mitul: "diamond",
-	josh: "radial",
-	mamuso: "op-art",
-	mery: "chromatic-aberration",
-	shu: "plasma",
-	william: "kaleidoscope",
-	tomo: "phyllotaxis",
-};
 
 const DEPLOYMENTS: {
 	user: string;
@@ -117,25 +102,45 @@ function Avatar({
 	user,
 	size,
 	colorScheme,
+	variant,
 }: {
 	user: string;
 	size: number;
 	colorScheme: ColorScheme;
+	variant: Variant;
 }) {
 	return (
 		<Identicon
 			value={user}
 			size={size}
-			variant={VARIANTS[user] ?? "bayer-4x4"}
+			variant={variant}
 			colorScheme={colorScheme}
 			style={AVATAR_STYLE}
 		/>
 	);
 }
 
-export function Dashboard({ colorScheme }: { colorScheme: ColorScheme }) {
+export function Dashboard({
+	colorScheme,
+	selectedVariant,
+}: {
+	colorScheme: ColorScheme;
+	selectedVariant: string;
+}) {
 	return (
 		<div style={{ padding: "24px 16px 48px" }}>
+			<h2
+				style={{
+					fontSize: 13,
+					fontWeight: 600,
+					color: "#fafafa",
+					marginBottom: 16,
+					letterSpacing: "-0.01em",
+				}}
+			>
+				In-App Preview
+			</h2>
+
 			<section>
 				<SectionTitle>Deployments</SectionTitle>
 				{DEPLOYMENTS.map((d, i) => (
@@ -159,7 +164,7 @@ export function Dashboard({ colorScheme }: { colorScheme: ColorScheme }) {
 							e.currentTarget.style.background = "transparent";
 						}}
 					>
-						<Avatar user={d.user} size={32} colorScheme={colorScheme} />
+						<Avatar user={d.user} size={32} colorScheme={colorScheme} variant={selectedVariant} />
 						<div style={{ flex: 1, minWidth: 0 }}>
 							<div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
 								<span style={{ fontWeight: 600, fontSize: 12, color: "#fafafa" }}>{d.user}</span>
@@ -217,7 +222,7 @@ export function Dashboard({ colorScheme }: { colorScheme: ColorScheme }) {
 							e.currentTarget.style.background = "transparent";
 						}}
 					>
-						<Avatar user={a.user} size={28} colorScheme={colorScheme} />
+						<Avatar user={a.user} size={28} colorScheme={colorScheme} variant={selectedVariant} />
 						<div style={{ flex: 1, minWidth: 0, fontSize: 11, color: "#a1a1aa" }}>
 							<span style={{ fontWeight: 600, color: "#fafafa" }}>{a.user}</span> {a.action}
 						</div>
