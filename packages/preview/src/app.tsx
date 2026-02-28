@@ -106,16 +106,29 @@ export function App() {
 					}}
 				>
 					<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-						<h1
-							style={{
-								fontSize: 14,
-								fontWeight: 600,
-								color: "#fafafa",
-								letterSpacing: "-0.01em",
-							}}
-						>
-							Vercel Identicon Prototypes
-						</h1>
+						<div>
+							<h1
+								style={{
+									fontSize: 14,
+									fontWeight: 600,
+									color: "#fafafa",
+									letterSpacing: "-0.01em",
+								}}
+							>
+								Vercel Identicon Prototypes
+							</h1>
+							<p style={{ fontSize: 11, color: "#52525b", marginTop: 2 }}>
+								Based on{" "}
+								<a
+									href="https://identicon-prototype.labs.vercel.dev/"
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ color: "#71717a", textDecoration: "underline" }}
+								>
+									identicon-prototype.labs.vercel.dev
+								</a>
+							</p>
+						</div>
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }}>
 							<input
 								type="text"

@@ -8,7 +8,7 @@
 		"url": "https://github.com/ShaunLWM/vercel-identicon",
 		"directory": "packages/identicon"
 	},
-	"homepage": "https://identicon-prototype.labs.vercel.dev/",
+	"homepage": "https://vercel-identicon-preview.vercel.app/",
 	"keywords": [
 		"identicon",
 		"avatar",
